@@ -9,7 +9,10 @@ function getBook() {
     return gBooks
 }
 
-
+function removeBook(id) {
+    const idx = gBooks.findIndex(book => book.id = id)
+    gBooks.splice(idx, 1)
+}
 
 
 
@@ -21,3 +24,5 @@ function _createBook(title, price, imgUrl = 'lori-ipsi.jpg') {
         imgUrl
     }
 }
+
+console.log(gBooks)
