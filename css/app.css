@@ -1,0 +1,22 @@
+:root {}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    height: 100vh;
+}
+
+.table {
+    display: grid;
+    grid-template-columns: 2fr 1fr 2fr;
+    gap: 1px;
+    background: #ccc;
+    border: 1px solid #ccc;
+}
+
+.table > div {
+  background: white;
+  padding: 12px;
+}
