@@ -16,7 +16,11 @@ body {
     border: 1px solid #ccc;
 }
 
-.table > div {
-  background: white;
-  padding: 12px;
+.table>div {
+    background: white;
+    padding: 12px;
+}
+
+.table>.table-header {
+    background: #e7e7e7
 }

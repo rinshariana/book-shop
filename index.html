@@ -8,42 +8,20 @@
     <link rel="stylesheet" href="css/app.css">
 </head>
 
-<body>
+<body onload="onInit()">
     <header>
         <h1>Book Shop</h1>
     </header>
 
     <main>
         <div class="table">
-            <div class="header">Title</div>
-            <div class="header">Price</div>
-            <div class="header">Action</div>
-
-            <div>The adventures of Lori Ipsi</div>
-            <div>120</div>
-            <div>
-                <button>Read</button>
-                <button>Update</button>
-                <button>Delete</button>
-            </div>
-
-            <div>World Atlas</div>
-            <div>300</div>
-            <div>
-                <button>Read</button>
-                <button>Update</button>
-                <button>Delete</button>
-            </div>
-            
-            <div>Zobra The Greek</div>
-            <div>87</div>
-            <div>
-                <button>Read</button>
-                <button>Update</button>
-                <button>Delete</button>
-            </div>
+            <div class="table-header">Title</div>
+            <div class="table-header">Price</div>
+            <div class="table-header">Action</div>
         </div>
     </main>
+    <script src="js/controller.js"></script>
+    <script src="js/services/app.service.js"></script>
 </body>
 
 </html>
