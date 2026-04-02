@@ -24,3 +24,12 @@ body {
 .table>.table-header {
     background: #e7e7e7
 }
+
+/* .update-modal {
+    position: relative;
+}
+
+.update-modal button {
+    position: absolute;
+    inset: 5px 5px auto auto;
+} */

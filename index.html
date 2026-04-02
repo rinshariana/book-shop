@@ -16,6 +16,15 @@
     <main>
         <div class="table"></div>
     </main>
+    
+    <dialog class="update-modal">
+        <form method="dialog">
+            <p>Enter new price</p>
+            <input class="new-price" type="number" placeholder="Enter new price">
+            <button onclick="onSavePrice()">Save</button>
+        </form>
+    </dialog>
+
     <script src="js/controller.js"></script>
     <script src="js/services/app.service.js"></script>
 </body>
