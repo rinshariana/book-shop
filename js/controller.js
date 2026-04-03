@@ -19,6 +19,7 @@ function renderBooks() {
                 <button>Read</button>
                 <button onclick="onUpdateBook('${bookObj.id}')">Update</button>
                 <button onclick="onRemoveBook('${bookObj.id}')">Delete</button>
+                <button onclick="onShowDetails('${bookObj.id}')">Details</button>
             </div>
         `
     }).join('')
@@ -48,8 +49,8 @@ function onSavePrice() {
 }
 
 function onAddBook() {
-    const elDetailsModal = document.querySelector('.add-modal')
-    elDetailsModal.showModal()
+    const elAddBookModal = document.querySelector('.add-modal')
+    elAddBookModal.showModal()
 }
 
 function onSaveBook() {
@@ -62,4 +63,15 @@ function onSaveBook() {
     if(!name || !price) return
     addBook(name, price)
     renderBooks()
+}
+
+function onShowDetails(id) {
+    const elDetailsModal = document.querySelector('.details-modal')
+    const elDetails = elDetailsModal.querySelector('pre')
+
+    const book = getBook(id)
+    const json = JSON.stringify(book, null, 4)
+
+    elDetails.innerText = json
+    elDetailsModal.showModal()
 }
