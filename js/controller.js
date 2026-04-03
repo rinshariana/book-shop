@@ -32,17 +32,34 @@ function onRemoveBook(id) {
 }
 
 function onUpdateBook(bookId) {
-    const elDetailsModal = document.querySelector('.update-modal')
+    const elUpdateModal = document.querySelector('.update-modal')
     gEditingBookId = bookId
-    elDetailsModal.showModal()
+    elUpdateModal.showModal()
 }
 
 function onSavePrice() {
-    const elInput = document.querySelector('.new-price')
-    const newPrice = elInput.valueAsNumber
-    
+    const elNewPrice = document.querySelector('.new-price')
+    const newPrice = elNewPrice.valueAsNumber
+
     if (!newPrice) return
     updatePrice(newPrice, gEditingBookId)
     gEditingBookId = null
+    renderBooks()
+}
+
+function onAddBook() {
+    const elDetailsModal = document.querySelector('.add-modal')
+    elDetailsModal.showModal()
+}
+
+function onSaveBook() {
+    const elName = document.querySelector('.name')
+    const elPrice = document.querySelector('.price')
+
+    const name = elName.value
+    const price = elPrice.valueAsNumber
+
+    if(!name || !price) return
+    addBook(name, price)
     renderBooks()
 }

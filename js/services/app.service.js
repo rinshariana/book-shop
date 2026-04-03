@@ -5,6 +5,11 @@ const gBooks = [
     _createBook('Zobra The Greek', 87),
 ]
 
+function addBook(name, price) {
+    const book = _createBook(name, price)
+    gBooks.push(book)
+}
+
 function getBooks() {
     return gBooks
 }

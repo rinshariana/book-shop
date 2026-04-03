@@ -14,6 +14,7 @@
     </header>
 
     <main>
+        <button class="add-book" onclick="onAddBook()">+</button>
         <div class="table"></div>
     </main>
     
@@ -22,6 +23,15 @@
             <p>Enter new price</p>
             <input class="new-price" type="number" placeholder="Enter new price">
             <button onclick="onSavePrice()">Save</button>
+        </form>
+    </dialog>
+
+    <dialog class="add-modal">
+        <form method="dialog">
+            <p>Add new book</p>
+            <input class="name" type="text" placeholder="Enter book name">
+            <input class="price" type="number" placeholder="Enter price">
+            <button onclick="onSaveBook()">Save</button>
         </form>
     </dialog>
 
