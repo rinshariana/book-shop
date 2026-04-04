@@ -15,7 +15,16 @@ body {
 }
 
 header {
+    display: flex;
+    align-items: center;
+
+    gap: 1em;
     align-self: stretch;
+    margin-left: 1em;
+}
+
+header img {
+    height: 2.5em;
     margin-left: 1em;
 }
 
