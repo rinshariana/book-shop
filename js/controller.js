@@ -8,8 +8,9 @@ function renderBooks(filter = NaN) {
     const elTable = document.querySelector('.table')
     let strHtml = `
             <div class="table-header"><span>Title</span></div>
-            <div class="table-header"><span>Action</span></div>
+            <div class="table-header"><span>Rating</span></div>
             <div class="table-header"><span>Price</span></div>
+            <div class="table-header"><span>Action</span></div>
     `
     const books = getBooks(filter)
     if (!books.length) {
@@ -18,11 +19,13 @@ function renderBooks(filter = NaN) {
                     </div>`
     } else {
         strHtml += books.map(bookObj => {
+            const ratingStr = createRatingEl(bookObj)
             return `
             <div>
                 <img src="${bookObj.img}" alt="book cover">
                 <span>${bookObj.title}</span>
             </div>
+            <div class="rating">${ratingStr}</div>
             <div>
                 <span>${bookObj.price}</span>
             </div>
@@ -119,4 +122,11 @@ function renderStats() {
     elExpensive.innerText = getByPriceCheap()
     elAvg.innerText = getByPriceAvg()
     elCheap.innerText = getByPriceExpensive()
+}
+
+function onStarClick(el, id) {
+    const value = el.dataset.value
+    updateRating(value, id)
+    renderBooks()
+    console.log(gBooks)
 }

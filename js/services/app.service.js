@@ -45,6 +45,12 @@ function getByPriceCheap() {
     return gBooks.filter(book => book.price < 80).length
 }
 
+function updateRating(value, id) {
+    const book = gBooks.find(book => book.id === id)
+    book.rating = value
+    _saveBooks()
+}
+
 // Private
 
 function _createBook(title, price, img = PLACEHOLDER) {
@@ -52,7 +58,8 @@ function _createBook(title, price, img = PLACEHOLDER) {
         id: crypto.randomUUID(),
         title,
         price,
-        img
+        img,
+        rating: 0
     }
 }
 
