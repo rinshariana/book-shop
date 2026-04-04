@@ -30,6 +30,7 @@ function renderBooks(filter = NaN) {
 function onRemoveBook(id) {
     removeBook(id)
     renderBooks()
+    successPopUp('Book removed')
 }
 
 function onUpdateBook(bookId) {
@@ -46,6 +47,7 @@ function onSavePrice() {
     updatePrice(newPrice, gEditingBookId)
     gEditingBookId = null
     renderBooks()
+    successPopUp('Price updated')
 }
 
 function onAddBook() {
@@ -63,6 +65,7 @@ function onSaveBook() {
     if (!name || !price) return
     addBook(name, price)
     renderBooks()
+    successPopUp('New book added')
 }
 
 function onShowDetails(id) {
@@ -84,4 +87,13 @@ function onFilterBooks(elInput) {
 function onClearFilter() {
     document.querySelector('.search-input').value = ''
     renderBooks()
+}
+
+function successPopUp(txt) {
+    const elPopUp = document.querySelector('.pop-up-modal')
+    const elTxt = elPopUp.querySelector('p')
+    elTxt.innerText = txt
+
+    elPopUp.show()
+    setTimeout(() => elPopUp.close(), 2000)
 }
