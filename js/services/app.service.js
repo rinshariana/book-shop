@@ -11,8 +11,12 @@ function addBook(name, price) {
     _saveBooks()
 }
 
-function getBooks() {
-    return gBooks
+function getBooks(filter = NaN) {
+    if (!filter) return gBooks
+
+    const searchTxt = filter.toLowerCase()
+    const books = gBooks.filter(book => book.title.toLowerCase().includes(searchTxt))
+    return books
 }
 
 function getBook(id) {
@@ -55,5 +59,3 @@ function _createBooks() {
 function _saveBooks() {
     saveToStorage(STORAGE_KEY, gBooks)
 }
-
-console.log(gBooks)

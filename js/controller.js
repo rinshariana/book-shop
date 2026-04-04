@@ -4,14 +4,14 @@ function onInit() {
     renderBooks()
 }
 
-function renderBooks() {
+function renderBooks(filter = NaN) {
     const elTable = document.querySelector('.table')
     let strHtml = `
             <div class="table-header">Title</div>
             <div class="table-header">Price</div>
             <div class="table-header">Action</div>
     `
-    strHtml += getBooks().map(bookObj => {
+    strHtml += getBooks(filter).map(bookObj => {
         return `
             <div>${bookObj.title}</div>
             <div>${bookObj.price}</div>
@@ -60,7 +60,7 @@ function onSaveBook() {
     const name = elName.value
     const price = elPrice.valueAsNumber
 
-    if(!name || !price) return
+    if (!name || !price) return
     addBook(name, price)
     renderBooks()
 }
@@ -74,4 +74,14 @@ function onShowDetails(id) {
 
     elDetails.innerText = json
     elDetailsModal.showModal()
+}
+
+function onFilterBooks(elInput) {
+    const txt = elInput.value
+    renderBooks(txt)
+}
+
+function onClearFilter() {
+    document.querySelector('.search-input').value = ''
+    renderBooks()
 }
