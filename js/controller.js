@@ -13,7 +13,10 @@ function renderBooks(filter = NaN) {
     `
     strHtml += getBooks(filter).map(bookObj => {
         return `
-            <div>${bookObj.title}</div>
+            <div>
+                <img src="${bookObj.img}" alt="book cover">
+                ${bookObj.title}
+            </div>
             <div>${bookObj.price}</div>
             <div>
                 <button>Read</button>

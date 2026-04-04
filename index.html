@@ -14,9 +14,12 @@
     </header>
 
     <main>
-        <input class="search-input" type="text" placeholder="Search by title" oninput="onFilterBooks(this)"/>
-        <button onclick="onClearFilter()">Clear</button>
-        <button class="add-book" onclick="onAddBook()">+</button>
+        <div class="actions">
+            <input class="search-input" type="text" placeholder="Search by title" oninput="onFilterBooks(this)" />
+            <button onclick="onClearFilter()">Clear</button>
+            <button class="add-book" onclick="onAddBook()">+</button>
+            <p>Add Book</p>
+        </div>
         <div class="table"></div>
     </main>
 
@@ -49,6 +52,7 @@
     </dialog>
 
     <script src="js/controller.js"></script>
+    <script src="js/config/assets.js"></script>
     <script src="js/services/storage.service.js"></script>
     <script src="js/services/app.service.js"></script>
 </body>

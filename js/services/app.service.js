@@ -1,7 +1,5 @@
 'use strict'
 
-const STORAGE_KEY = 'books_array'
-
 let gBooks
 _createBooks()
 
@@ -35,12 +33,12 @@ function updatePrice(price, id) {
     _saveBooks()
 }
 
-function _createBook(title, price, imgUrl = 'lori-ipsi.jpg') {
+function _createBook(title, price, img = PLACEHOLDER) {
     return {
         id: crypto.randomUUID(),
         title,
         price,
-        imgUrl
+        img
     }
 }
 
