@@ -22,7 +22,7 @@ function getBook(id) {
 }
 
 function removeBook(id) {
-    const idx = gBooks.findIndex(book => book.id = id)
+    const idx = gBooks.findIndex(book => book.id === id)
     gBooks.splice(idx, 1)
     _saveBooks()
 }

@@ -86,12 +86,17 @@ function onSaveBook() {
 
 function onShowDetails(id) {
     const elDetailsModal = document.querySelector('.details-modal')
-    const elDetails = elDetailsModal.querySelector('pre')
+    const elBookCover = elDetailsModal.querySelector('img')
+    // const elDetails = elDetailsModal.querySelector('p')
+    const elRating = elDetailsModal.querySelector('.rating')
 
     const book = getBook(id)
-    const json = JSON.stringify(book, null, 4)
-
-    elDetails.innerText = json
+    const rating = createRatingEl(book)
+    console.dir(elBookCover)
+    
+    elRating.innerHTML = rating
+    elBookCover.src = book.img
+    // elDetails.innerText = 'shdsahfvakufv'
     elDetailsModal.showModal()
 }
 
