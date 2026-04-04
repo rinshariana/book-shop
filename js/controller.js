@@ -28,6 +28,7 @@ function renderBooks(filter = NaN) {
     }).join('')
 
     elTable.innerHTML = strHtml
+    renderStats()
 }
 
 function onRemoveBook(id) {
@@ -99,4 +100,14 @@ function successPopUp(txt) {
 
     elPopUp.show()
     setTimeout(() => elPopUp.close(), 2000)
+}
+
+function renderStats() {
+    const elExpensive = document.querySelector('.expensive-count')
+    const elAvg = document.querySelector('.average-count')
+    const elCheap = document.querySelector('.cheap-count')
+
+    elExpensive.innerText = getByPriceCheap()
+    elAvg.innerText = getByPriceAvg()
+    elCheap.innerText = getByPriceExpensive()
 }

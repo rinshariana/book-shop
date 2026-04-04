@@ -33,6 +33,20 @@ function updatePrice(price, id) {
     _saveBooks()
 }
 
+function getByPriceAvg() {
+    return gBooks.filter(book => book.price > 100 && book.price < 200).length
+}
+
+function getByPriceExpensive() {
+    return gBooks.filter(book => book.price > 200).length
+}
+
+function getByPriceCheap() {
+    return gBooks.filter(book => book.price < 80).length
+}
+
+// Private
+
 function _createBook(title, price, img = PLACEHOLDER) {
     return {
         id: crypto.randomUUID(),
@@ -47,9 +61,13 @@ function _createBooks() {
 
     if (gBooks && gBooks.length > 0) return
     gBooks = [
-        _createBook('The adventures of Lori Ipsi', 120),
-        _createBook('World Atlas', 300),
-        _createBook('Zobra The Greek', 87),
+        _createBook('Dune', 120, 'img/81Ua99CURsL._AC_UF1000,1000_QL80_.jpg'),
+        _createBook('God Emperor Of Dune', 300, 'img/81Vd8KaCXzL._SL1500_.jpg'),
+        _createBook('For Whom Bells Tolls', 75, 'img/9780099289821.jpg'),
+        _createBook('Metamorphosis And Other Stories', 249, 'img/9780241436240.jpg'),
+        _createBook('The Second Sex', 279, 'img/9780099595731.jpg'),
+        _createBook('Anna Karenina', 150, 'img/9780099540663.jpg'),
+        _createBook('Crime And Punishment', 79, 'img/9780141192802.jpg'),
     ]
     _saveBooks()
 }

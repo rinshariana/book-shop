@@ -7,18 +7,20 @@
 body {
     display: flex;
     flex-direction: column;
+    align-items: center;
 
     height: 100vh;
     margin: 0;
 }
 
 header {
+    align-self: stretch;
     margin-left: 1em;
 }
 
 main {
     flex: 1;
-    max-width: 1024px;
+    min-width: 700px;
     padding: 1em;
 }
 
@@ -27,6 +29,7 @@ footer {
     justify-content: space-between;
     align-items: center;
 
+    width: 100%;
     padding: 0.7em;
     background-color: #ccc;
 }
@@ -48,8 +51,8 @@ img {
 .table {
     display: grid;
     grid-template-columns: 2fr 1fr 2fr;
-    gap: 1px;
 
+    gap: 1px;
     background: #ccc;
     border: 1px solid #ccc;
 }
@@ -69,11 +72,10 @@ img {
     background: #e7e7e7
 }
 
-/* .pop-up-modal {
-    background: none;
-} */
-
-/* .update-modal button {
-    position: absolute;
-    inset: 5px 5px auto auto;
-} */
+.pop-up-modal {
+    position: fixed;
+    bottom: 60px;
+    margin: 0;
+    margin-inline-start: auto;
+    margin-right: 20px;
+}
