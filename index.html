@@ -20,7 +20,7 @@
             <input class="search-input" type="text" placeholder="Search by title" oninput="onFilterBooks(this)" />
             <button onclick="onClearFilter()">Clear</button>
             <button class="add-book" onclick="onAddBook()">+</button>
-            <p>Add Book</p>
+            <span>Add Book</span>
         </div>
         <div class="table"></div>
     </main>
@@ -47,7 +47,7 @@
 
     <dialog class="add-modal">
         <form method="dialog">
-            <p>Add new book</p>
+            <span>Add new book</span>
             <input class="name" type="text" placeholder="Enter book name">
             <input class="price" type="number" placeholder="Enter price">
             <button onclick="onSaveBook()">Save</button>
@@ -62,7 +62,7 @@
     </dialog>
 
     <dialog class="pop-up-modal">
-        <p></p>
+        <span></span>
     </dialog>
 
     <script src="js/controller.js"></script>

@@ -52,9 +52,10 @@ img {
     display: flex;
     align-items: center;
     gap: 0.5em;
+    margin-bottom: 0.5em;
 }
 
-.actions > :nth-child(3) {
+.actions> :nth-child(3) {
     margin-inline-start: auto;
 }
 
@@ -80,6 +81,16 @@ img {
 
 .table>.table-header {
     background: #e7e7e7
+}
+
+.table .message {
+    grid-column: 1 / -1;
+    height: 150px;
+}
+
+.table .message span {
+    margin-inline: auto;
+    color: #a3a3a3;
 }
 
 .pop-up-modal {

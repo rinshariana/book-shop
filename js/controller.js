@@ -7,25 +7,34 @@ function onInit() {
 function renderBooks(filter = NaN) {
     const elTable = document.querySelector('.table')
     let strHtml = `
-            <div class="table-header">Title</div>
-            <div class="table-header">Price</div>
-            <div class="table-header">Action</div>
+            <div class="table-header"><span>Title</span></div>
+            <div class="table-header"><span>Action</span></div>
+            <div class="table-header"><span>Price</span></div>
     `
-    strHtml += getBooks(filter).map(bookObj => {
-        return `
+    const books = getBooks(filter)
+    if (!books.length) {
+        strHtml += `<div class="message">
+                        <span>No matching books were found...</span>
+                    </div>`
+    } else {
+        strHtml += books.map(bookObj => {
+            return `
             <div>
                 <img src="${bookObj.img}" alt="book cover">
-                ${bookObj.title}
+                <span>${bookObj.title}</span>
             </div>
-            <div>${bookObj.price}</div>
+            <div>
+                <span>${bookObj.price}</span>
+            </div>
             <div>
                 <button>Read</button>
                 <button onclick="onUpdateBook('${bookObj.id}')">Update</button>
                 <button onclick="onRemoveBook('${bookObj.id}')">Delete</button>
                 <button onclick="onShowDetails('${bookObj.id}')">Details</button>
             </div>
-        `
-    }).join('')
+            `
+        }).join('')
+    }
 
     elTable.innerHTML = strHtml
     renderStats()
@@ -95,7 +104,7 @@ function onClearFilter() {
 
 function successPopUp(txt) {
     const elPopUp = document.querySelector('.pop-up-modal')
-    const elTxt = elPopUp.querySelector('p')
+    const elTxt = elPopUp.querySelector('span')
     elTxt.innerText = txt
 
     elPopUp.show()
