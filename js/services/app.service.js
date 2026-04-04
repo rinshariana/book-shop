@@ -1,13 +1,14 @@
+'use strict'
 
-const gBooks = [
-    _createBook('The adventures of Lori Ipsi', 120),
-    _createBook('World Atlas', 300),
-    _createBook('Zobra The Greek', 87),
-]
+const STORAGE_KEY = 'books_array'
+
+let gBooks
+_createBooks()
 
 function addBook(name, price) {
     const book = _createBook(name, price)
     gBooks.push(book)
+    _saveBooks()
 }
 
 function getBooks() {
@@ -21,11 +22,13 @@ function getBook(id) {
 function removeBook(id) {
     const idx = gBooks.findIndex(book => book.id = id)
     gBooks.splice(idx, 1)
+    _saveBooks()
 }
 
 function updatePrice(price, id) {
     const book = gBooks.find(book => book.id === id)
     book.price = price
+    _saveBooks()
 }
 
 function _createBook(title, price, imgUrl = 'lori-ipsi.jpg') {
@@ -35,6 +38,22 @@ function _createBook(title, price, imgUrl = 'lori-ipsi.jpg') {
         price,
         imgUrl
     }
+}
+
+function _createBooks() {
+    gBooks = loadFromStorage(STORAGE_KEY)
+
+    if (gBooks && gBooks.length > 0) return
+    gBooks = [
+        _createBook('The adventures of Lori Ipsi', 120),
+        _createBook('World Atlas', 300),
+        _createBook('Zobra The Greek', 87),
+    ]
+    _saveBooks()
+}
+
+function _saveBooks() {
+    saveToStorage(STORAGE_KEY, gBooks)
 }
 
 console.log(gBooks)
