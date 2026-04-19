@@ -1,56 +1,64 @@
-let gEditingBookId = null
+'use strict'
+
+var gEditingBookId = null
+var gFilter = ''
+var gIsDetailsShown = false
 
 function onInit() {
     renderBooks()
 }
 
-function renderBooks(filter = NaN) {
+function renderBooks() {
     const elTable = document.querySelector('.table')
-    let strHtml = `
-            <div class="table-header"><span>Title</span></div>
-            <div class="table-header"><span>Rating</span></div>
-            <div class="table-header"><span>Price</span></div>
-            <div class="table-header"><span>Action</span></div>
+    var strHtml = `
+        <div class="table-header"><span>Title</span></div>
+        <div class="table-header"><span>Rating</span></div>
+        <div class="table-header"><span>Price</span></div>
+        <div class="table-header"><span>Action</span></div>
     `
-    const books = getBooks(filter)
+    const books = getBooks(gFilter)
     if (!books.length) {
         strHtml += `<div class="message">
                         <span>No matching books were found...</span>
                     </div>`
     } else {
-        strHtml += books.map(bookObj => {
-            const ratingStr = createRatingEl(bookObj)
-            return `
-            <div>
-                <img src="${bookObj.img}" alt="book cover">
-                <span>${bookObj.title}</span>
-            </div>
-            <div class="rating">${ratingStr}</div>
-            <div>
-                <span>${bookObj.price}</span>
-            </div>
-            <div>
-                <button>Read</button>
-                <button onclick="onUpdateBook('${bookObj.id}')">Update</button>
-                <button onclick="onRemoveBook('${bookObj.id}')">Delete</button>
-                <button onclick="onShowDetails('${bookObj.id}')">Details</button>
-            </div>
-            `
-        }).join('')
+        strHtml += books
+            .map(book => {
+                const ratingHtml = createRatingEl(book)
+                return `
+                <div>
+                    <img src="${book.img}" alt="book cover">
+                    <span>${book.title}</span>
+                </div>
+                <div class="rating">${ratingHtml}</div>
+                <div>
+                    <span>${book.price}</span>
+                </div>
+                <div>
+                    <button onclick="onUpdateBook('${book.id}')">Update</button>
+                    <button onclick="onRemoveBook('${book.id}')">Delete</button>
+                    <button onclick="onShowDetails('${book.id}')">Details</button>
+                </div>`
+            })
+            .join('')
     }
 
     elTable.innerHTML = strHtml
     renderStats()
 }
 
-function onRemoveBook(id) {
-    removeBook(id)
+function onRemoveBook(bookId) {
+    removeBook(bookId)
     renderBooks()
     successPopUp('Book removed')
 }
 
 function onUpdateBook(bookId) {
     const elUpdateModal = document.querySelector('.update-modal')
+
+    const elNewPrice = document.querySelector('.new-price')
+    elNewPrice.value = ''
+
     gEditingBookId = bookId
     elUpdateModal.showModal()
 }
@@ -62,8 +70,14 @@ function onSavePrice() {
     if (!newPrice) return
     updatePrice(newPrice, gEditingBookId)
     gEditingBookId = null
+
     renderBooks()
     successPopUp('Price updated')
+}
+
+function onCloseUpdateModal() {
+    const elModal = document.querySelector('.update-modal')
+    elModal.close()
 }
 
 function onAddBook() {
@@ -87,26 +101,31 @@ function onSaveBook() {
 function onShowDetails(id) {
     const elDetailsModal = document.querySelector('.details-modal')
     const elBookCover = elDetailsModal.querySelector('img')
-    // const elDetails = elDetailsModal.querySelector('p')
     const elRating = elDetailsModal.querySelector('.rating')
+    const elPrice = elDetailsModal.querySelector('.price')
 
     const book = getBook(id)
-    const rating = createRatingEl(book)
-    console.dir(elBookCover)
-    
-    elRating.innerHTML = rating
+    const ratingHtml = createRatingEl(book)
+
+    elRating.innerHTML = ratingHtml
+    elPrice.innerHTML = book.price
     elBookCover.src = book.img
-    // elDetails.innerText = 'shdsahfvakufv'
+    gIsDetailsShown = true
     elDetailsModal.showModal()
 }
 
+function onCloseDetails() {
+    gIsDetailsShown = false
+}
+
 function onFilterBooks(elInput) {
-    const txt = elInput.value
-    renderBooks(txt)
+    gFilter = elInput.value
+    renderBooks()
 }
 
 function onClearFilter() {
     document.querySelector('.search-input').value = ''
+    gFilter = ''
     renderBooks()
 }
 
@@ -120,18 +139,39 @@ function successPopUp(txt) {
 }
 
 function renderStats() {
+    const priceMap = getPriceMap()
+
     const elExpensive = document.querySelector('.expensive-count')
     const elAvg = document.querySelector('.average-count')
     const elCheap = document.querySelector('.cheap-count')
 
-    elExpensive.innerText = getByPriceCheap()
-    elAvg.innerText = getByPriceAvg()
-    elCheap.innerText = getByPriceExpensive()
+    elExpensive.innerText = priceMap.expensive
+    elAvg.innerText = priceMap.avg
+    elCheap.innerText = priceMap.cheap
 }
 
-function onStarClick(el, id) {
-    const value = el.dataset.value
-    updateRating(value, id)
+function createRatingEl(book) {
+    const stars = '★★★★★'.split('')
+    const strHtmls = stars.map((star, idx) => {
+        const className = idx <= book.rating ? 'active' : ''
+        return `<span 
+            class="${className}" 
+            data-value="${idx}" 
+            onclick="onStarClick(this, '${book.id}')">${star}</span>`
+    })
+
+    return strHtmls.join('')
+}
+
+function onStarClick(elStar, bookId) {
+    const value = +elStar.dataset.value
+    updateRating(value, bookId)
+
+    if (gIsDetailsShown) {
+        const elRating = document.querySelector('.details-modal .rating')
+        const book = getBook(bookId)
+        elRating.innerHTML = createRatingEl(book)
+    }
+
     renderBooks()
-    console.log(gBooks)
 }

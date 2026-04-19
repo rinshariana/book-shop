@@ -17,10 +17,10 @@
 
     <main>
         <div class="actions">
-            <input class="search-input" type="text" placeholder="Search by title" oninput="onFilterBooks(this)" />
+            <input oninput="onFilterBooks(this)" class="search-input" type="text" placeholder="Search by title" />
             <button onclick="onClearFilter()">Clear</button>
-            <button class="add-book" onclick="onAddBook()">+</button>
-            <span>Add Book</span>
+            <button class="add-book" onclick="onAddBook()">Add Book</button>
+            <!-- <span>Add Book</span> -->
         </div>
         <div class="table"></div>
     </main>
@@ -38,27 +38,29 @@
     </footer>
 
     <dialog class="update-modal">
-        <form method="dialog">
+        <form method="dialog" onsubmit="onSavePrice()">
             <p>Update book price</p>
             <input class="new-price" type="number" placeholder="Enter new price">
-            <button onclick="onSavePrice()">Save</button>
+            <button type="button" onclick="onCloseUpdateModal()">Cancel</button>
+            <button>Save</button>
         </form>
     </dialog>
 
     <dialog class="add-modal">
-        <form method="dialog">
+        <form onsubmit="onSaveBook()" method="dialog">
             <span>Add new book</span>
             <input class="name" type="text" placeholder="Enter book name">
             <input class="price" type="number" placeholder="Enter price">
-            <button onclick="onSaveBook()">Save</button>
+            <button>Save</button>
         </form>
     </dialog>
 
-    <dialog class="details-modal">
+    <dialog class="details-modal" onclose="onCloseDetails()">
         <form method="dialog">
             <button>x</button>
             <img src="" alt="book cover">
             <div class="rating"></div>
+            <div class="price"></div>
             <p>some thing about book</p>
         </form>
     </dialog>
@@ -67,11 +69,13 @@
         <span></span>
     </dialog>
 
-    <script src="js/utils.js"></script>
-    <script src="js/controller.js"></script>
-    <script src="js/config/assets.js"></script>
+    <!-- <script src="js/utils.js"></script> -->
+    <!-- <script src="js/config/assets.js"></script> -->
+    <script src="js/services/util.service.js"></script>
     <script src="js/services/storage.service.js"></script>
-    <script src="js/services/app.service.js"></script>
+    <script src="js/services/book.service.js"></script>
+
+    <script src="js/controller.js"></script>
 </body>
 
 </html>
