@@ -1,177 +1,345 @@
 'use strict'
 
 var gEditingBookId = null
-var gFilter = ''
-var gIsDetailsShown = false
+var gDetailsBookId = null
 
 function onInit() {
+    _applyStateFromQueryParams()
+    renderPage()
+    _restoreModalStateFromQueryParams()
+}
+
+function renderPage() {
+    renderFilterControls()
+    renderSortControls()
     renderBooks()
+    renderPagination()
+    renderStats()
+    _updateQueryParams()
+}
+
+function renderFilterControls() {
+    const filterBy = getFilterBy()
+
+    document.querySelector('.search-input').value = filterBy.txt
+    document.querySelector('.min-rating-select').value = String(filterBy.minRating)
+}
+
+function renderSortControls() {
+    const sortBy = getSortBy()
+    document.querySelector('.sort-select').value = sortBy.field
+    document.querySelector(`input[name="sort-dir"][value="${sortBy.dir}"]`).checked = true
 }
 
 function renderBooks() {
     const elTable = document.querySelector('.table')
+    const sortBy = getSortBy()
+    const books = getBooksForDisplay()
+
     var strHtml = `
-        <div class="table-header"><span>Title</span></div>
-        <div class="table-header"><span>Rating</span></div>
-        <div class="table-header"><span>Price</span></div>
-        <div class="table-header"><span>Action</span></div>
+        <button class="table-header sort-btn" onclick="onSetSort('title')">
+            Title ${_getSortIndicator('title', sortBy)}
+        </button>
+        <button class="table-header sort-btn" onclick="onSetSort('rating')">
+            Rating ${_getSortIndicator('rating', sortBy)}
+        </button>
+        <button class="table-header sort-btn" onclick="onSetSort('price')">
+            Price ${_getSortIndicator('price', sortBy)}
+        </button>
+        <div class="table-header">Actions</div>
     `
-    const books = getBooks(gFilter)
+
     if (!books.length) {
-        strHtml += `<div class="message">
-                        <span>No matching books were found...</span>
-                    </div>`
+        strHtml += `
+            <div class="message">
+                <span>No matching books were found...</span>
+            </div>
+        `
     } else {
-        strHtml += books
-            .map(book => {
-                const ratingHtml = createRatingEl(book)
-                return `
-                <div>
-                    <img src="${book.img}" alt="book cover">
-                    <span>${book.title}</span>
-                </div>
-                <div class="rating">${ratingHtml}</div>
-                <div>
-                    <span>${book.price}</span>
-                </div>
-                <div>
-                    <button onclick="onUpdateBook('${book.id}')">Update</button>
-                    <button onclick="onRemoveBook('${book.id}')">Delete</button>
-                    <button onclick="onShowDetails('${book.id}')">Details</button>
-                </div>`
-            })
-            .join('')
+        strHtml += books.map(book => `
+            <div class="book-cell">
+                <img src="${book.img}" alt="${book.title}">
+                <span>${book.title}</span>
+            </div>
+            <div class="rating">${createRatingEl(book.rating)}</div>
+            <div class="price-cell">$${book.price}</div>
+            <div class="actions-cell">
+                <button onclick="onOpenEditModal('${book.id}')">Edit</button>
+                <button onclick="onRemoveBook('${book.id}')">Delete</button>
+                <button onclick="onShowDetails('${book.id}')">Details</button>
+            </div>
+        `).join('')
     }
 
     elTable.innerHTML = strHtml
-    renderStats()
 }
 
-function onRemoveBook(bookId) {
-    removeBook(bookId)
-    renderBooks()
-    successPopUp('Book removed')
-}
+function renderPagination() {
+    const elPagination = document.querySelector('.pagination')
+    const pageCount = getPageCount()
+    const pageIdx = getPageIdx()
 
-function onUpdateBook(bookId) {
-    const elUpdateModal = document.querySelector('.update-modal')
+    if (!pageCount) {
+        elPagination.innerHTML = ''
+        return
+    }
 
-    const elNewPrice = document.querySelector('.new-price')
-    elNewPrice.value = ''
+    var strHtml = `<button onclick="onChangePage(-1)">Prev</button>`
 
-    gEditingBookId = bookId
-    elUpdateModal.showModal()
-}
+    for (var idx = 0; idx < pageCount; idx++) {
+        const className = idx === pageIdx ? 'active' : ''
+        strHtml += `
+            <button class="${className}" onclick="onGoToPage(${idx})">${idx + 1}</button>
+        `
+    }
 
-function onSavePrice() {
-    const elNewPrice = document.querySelector('.new-price')
-    const newPrice = elNewPrice.valueAsNumber
-
-    if (!newPrice) return
-    updatePrice(newPrice, gEditingBookId)
-    gEditingBookId = null
-
-    renderBooks()
-    successPopUp('Price updated')
-}
-
-function onCloseUpdateModal() {
-    const elModal = document.querySelector('.update-modal')
-    elModal.close()
-}
-
-function onAddBook() {
-    const elAddBookModal = document.querySelector('.add-modal')
-    elAddBookModal.showModal()
-}
-
-function onSaveBook() {
-    const elName = document.querySelector('.name')
-    const elPrice = document.querySelector('.price')
-
-    const name = elName.value
-    const price = elPrice.valueAsNumber
-
-    if (!name || !price) return
-    addBook(name, price)
-    renderBooks()
-    successPopUp('New book added')
-}
-
-function onShowDetails(id) {
-    const elDetailsModal = document.querySelector('.details-modal')
-    const elBookCover = elDetailsModal.querySelector('img')
-    const elRating = elDetailsModal.querySelector('.rating')
-    const elPrice = elDetailsModal.querySelector('.price')
-
-    const book = getBook(id)
-    const ratingHtml = createRatingEl(book)
-
-    elRating.innerHTML = ratingHtml
-    elPrice.innerHTML = book.price
-    elBookCover.src = book.img
-    gIsDetailsShown = true
-    elDetailsModal.showModal()
-}
-
-function onCloseDetails() {
-    gIsDetailsShown = false
-}
-
-function onFilterBooks(elInput) {
-    gFilter = elInput.value
-    renderBooks()
-}
-
-function onClearFilter() {
-    document.querySelector('.search-input').value = ''
-    gFilter = ''
-    renderBooks()
-}
-
-function successPopUp(txt) {
-    const elPopUp = document.querySelector('.pop-up-modal')
-    const elTxt = elPopUp.querySelector('span')
-    elTxt.innerText = txt
-
-    elPopUp.show()
-    setTimeout(() => elPopUp.close(), 2000)
+    strHtml += `<button onclick="onChangePage(1)">Next</button>`
+    elPagination.innerHTML = strHtml
 }
 
 function renderStats() {
     const priceMap = getPriceMap()
 
-    const elExpensive = document.querySelector('.expensive-count')
-    const elAvg = document.querySelector('.average-count')
-    const elCheap = document.querySelector('.cheap-count')
-
-    elExpensive.innerText = priceMap.expensive
-    elAvg.innerText = priceMap.avg
-    elCheap.innerText = priceMap.cheap
+    document.querySelector('.expensive-count').innerText = priceMap.expensive
+    document.querySelector('.average-count').innerText = priceMap.avg
+    document.querySelector('.cheap-count').innerText = priceMap.cheap
 }
 
-function createRatingEl(book) {
-    const stars = '★★★★★'.split('')
-    const strHtmls = stars.map((star, idx) => {
-        const className = idx <= book.rating ? 'active' : ''
-        return `<span 
-            class="${className}" 
-            data-value="${idx}" 
-            onclick="onStarClick(this, '${book.id}')">${star}</span>`
-    })
-
-    return strHtmls.join('')
+function onFilterBooks(elInput) {
+    setFilterBy({ txt: elInput.value })
+    renderPage()
 }
 
-function onStarClick(elStar, bookId) {
-    const value = +elStar.dataset.value
-    updateRating(value, bookId)
+function onSetMinRating(elSelect) {
+    setFilterBy({ minRating: +elSelect.value })
+    renderPage()
+}
 
-    if (gIsDetailsShown) {
-        const elRating = document.querySelector('.details-modal .rating')
-        const book = getBook(bookId)
-        elRating.innerHTML = createRatingEl(book)
+function onClearFilter() {
+    setFilterBy({ txt: '', minRating: 0 })
+    renderPage()
+}
+
+function onSetSort(field) {
+    const sortBy = getSortBy()
+
+    if (sortBy.field === field) {
+        setSortBy({ dir: sortBy.dir === 'asc' ? 'desc' : 'asc' })
+    } else {
+        setSortBy({ field, dir: 'asc' })
     }
 
-    renderBooks()
+    renderPage()
+}
+
+function onSetSortField(elSelect) {
+    setSortBy({ field: elSelect.value })
+    renderPage()
+}
+
+function onSetSortDir(elRadio) {
+    setSortBy({ dir: elRadio.value })
+    renderPage()
+}
+
+function onChangePage(diff) {
+    setPageIdx(getPageIdx() + diff)
+    renderPage()
+}
+
+function onGoToPage(pageIdx) {
+    setPageIdx(pageIdx)
+    renderPage()
+}
+
+function onRemoveBook(bookId) {
+    removeBook(bookId)
+
+    if (gDetailsBookId === bookId) _closeDetailsModal()
+    if (gEditingBookId === bookId) _closeEditModal()
+
+    renderPage()
+    successPopUp('Book removed')
+}
+
+function onAddBook() {
+    gEditingBookId = null
+    _populateEditForm()
+    _openEditModal()
+}
+
+function onOpenEditModal(bookId) {
+    gEditingBookId = bookId
+    _populateEditForm(getBook(bookId))
+    _openEditModal()
+}
+
+function onSaveBook(ev) {
+    ev.preventDefault()
+
+    const elForm = document.querySelector('.book-edit-form')
+    const formData = new FormData(elForm)
+    const title = formData.get('title').trim()
+    const price = +formData.get('price')
+    const img = formData.get('img').trim() || undefined
+    const rating = +document.querySelector('.book-rating-value').value
+
+    if (!title || !price) return
+
+    if (gEditingBookId) {
+        updateBookById(gEditingBookId, { title, price, rating, img })
+        successPopUp('Book updated')
+    } else {
+        addBook(title, price, rating, img)
+        successPopUp('New book added')
+    }
+
+    _closeEditModal()
+    renderPage()
+}
+
+function onAdjustEditRating(diff) {
+    const elInput = document.querySelector('.book-rating-value')
+    const nextRating = Math.min(Math.max(+elInput.value + diff, 1), 5)
+    elInput.value = nextRating
+    document.querySelector('.book-rating-preview').innerHTML = createRatingEl(nextRating)
+}
+
+function onShowDetails(id) {
+    const book = getBook(id)
+    if (!book) return
+
+    gDetailsBookId = id
+    _renderDetailsModal(book)
+
+    const elModal = document.querySelector('.details-modal')
+    if (!elModal.open) elModal.showModal()
+    _updateQueryParams()
+}
+
+function onCloseDetails() {
+    gDetailsBookId = null
+    _updateQueryParams()
+}
+
+function onDetailsToEdit() {
+    const bookId = gDetailsBookId
+    _closeDetailsModal()
+    onOpenEditModal(bookId)
+}
+
+function onCloseEditModal() {
+    _closeEditModal()
+}
+
+function successPopUp(txt) {
+    const elPopUp = document.querySelector('.pop-up-modal')
+    elPopUp.querySelector('span').innerText = txt
+
+    elPopUp.show()
+    setTimeout(() => elPopUp.close(), 1800)
+}
+
+function createRatingEl(rating) {
+    return '★★★★★'.split('').map((star, idx) => {
+        const className = idx < rating ? 'active' : ''
+        return `<span class="${className}">${star}</span>`
+    }).join('')
+}
+
+function _populateEditForm(book) {
+    const elForm = document.querySelector('.book-edit-form')
+    const title = book ? book.title : ''
+    const price = book ? book.price : ''
+    const img = book ? book.img : ''
+    const rating = book ? book.rating : 3
+
+    elForm.querySelector('[name="title"]').value = title
+    elForm.querySelector('[name="price"]').value = price
+    elForm.querySelector('[name="img"]').value = img
+    elForm.querySelector('.book-rating-value').value = rating
+    elForm.querySelector('.book-rating-preview').innerHTML = createRatingEl(rating)
+    document.querySelector('.book-edit-title').innerText = book ? 'Edit book' : 'Add book'
+}
+
+function _renderDetailsModal(book) {
+    const elModal = document.querySelector('.details-modal')
+    elModal.querySelector('.details-title').innerText = book.title
+    elModal.querySelector('img').src = book.img
+    elModal.querySelector('img').alt = book.title
+    elModal.querySelector('.details-rating').innerHTML = createRatingEl(book.rating)
+    elModal.querySelector('.details-price').innerText = `$${book.price}`
+}
+
+function _openEditModal() {
+    const elModal = document.querySelector('.edit-modal')
+    if (!elModal.open) elModal.showModal()
+    _updateQueryParams()
+}
+
+function _closeEditModal() {
+    gEditingBookId = null
+    const elModal = document.querySelector('.edit-modal')
+    if (elModal.open) elModal.close()
+    _updateQueryParams()
+}
+
+function _closeDetailsModal() {
+    gDetailsBookId = null
+    const elModal = document.querySelector('.details-modal')
+    if (elModal.open) elModal.close()
+    _updateQueryParams()
+}
+
+function _getSortIndicator(field, sortBy) {
+    if (sortBy.field !== field) return ''
+    return sortBy.dir === 'asc' ? '+' : '-'
+}
+
+function _applyStateFromQueryParams() {
+    const params = new URLSearchParams(window.location.search)
+    const sortField = params.get('sortField')
+    const sortDir = params.get('sortDir')
+
+    setFilterBy({
+        txt: params.get('txt') || '',
+        minRating: +(params.get('minRating') || 0)
+    })
+
+    setSortBy({
+        field: ['title', 'price', 'rating'].includes(sortField) ? sortField : 'title',
+        dir: ['asc', 'desc'].includes(sortDir) ? sortDir : 'asc'
+    })
+
+    setPageIdx(+(params.get('pageIdx') || 0))
+
+    const detailsId = params.get('detailsId')
+    const editId = params.get('editId')
+
+    gDetailsBookId = getBook(detailsId) ? detailsId : null
+    gEditingBookId = getBook(editId) ? editId : null
+}
+
+function _restoreModalStateFromQueryParams() {
+    if (gDetailsBookId) onShowDetails(gDetailsBookId)
+    if (gEditingBookId) onOpenEditModal(gEditingBookId)
+}
+
+function _updateQueryParams() {
+    const filterBy = getFilterBy()
+    const sortBy = getSortBy()
+    const pageIdx = getPageIdx()
+    const params = new URLSearchParams()
+
+    if (filterBy.txt) params.set('txt', filterBy.txt)
+    if (filterBy.minRating) params.set('minRating', filterBy.minRating)
+    if (sortBy.field !== 'title') params.set('sortField', sortBy.field)
+    if (sortBy.dir !== 'asc') params.set('sortDir', sortBy.dir)
+    if (pageIdx) params.set('pageIdx', pageIdx)
+    if (gDetailsBookId) params.set('detailsId', gDetailsBookId)
+    if (gEditingBookId) params.set('editId', gEditingBookId)
+
+    const queryString = params.toString()
+    const nextUrl = queryString ? `${window.location.pathname}?${queryString}` : window.location.pathname
+    window.history.replaceState({}, '', nextUrl)
 }

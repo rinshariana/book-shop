@@ -18,11 +18,32 @@
     <main>
         <div class="actions">
             <input oninput="onFilterBooks(this)" class="search-input" type="text" placeholder="Search by title" />
+            <select class="min-rating-select" onchange="onSetMinRating(this)">
+                <option value="0">Any rating</option>
+                <option value="1">1+ stars</option>
+                <option value="2">2+ stars</option>
+                <option value="3">3+ stars</option>
+                <option value="4">4+ stars</option>
+                <option value="5">5 stars</option>
+            </select>
             <button onclick="onClearFilter()">Clear</button>
+            <select class="sort-select" onchange="onSetSortField(this)">
+                <option value="title">Sort: Title</option>
+                <option value="price">Sort: Price</option>
+                <option value="rating">Sort: Rating</option>
+            </select>
+            <label>
+                <input type="radio" name="sort-dir" value="asc" onchange="onSetSortDir(this)" checked>
+                Asc
+            </label>
+            <label>
+                <input type="radio" name="sort-dir" value="desc" onchange="onSetSortDir(this)">
+                Desc
+            </label>
             <button class="add-book" onclick="onAddBook()">Add Book</button>
-            <!-- <span>Add Book</span> -->
         </div>
         <div class="table"></div>
+        <nav class="pagination"></nav>
     </main>
 
     <footer>
@@ -37,31 +58,36 @@
         </div>
     </footer>
 
-    <dialog class="update-modal">
-        <form method="dialog" onsubmit="onSavePrice()">
-            <p>Update book price</p>
-            <input class="new-price" type="number" placeholder="Enter new price">
-            <button type="button" onclick="onCloseUpdateModal()">Cancel</button>
-            <button>Save</button>
-        </form>
-    </dialog>
-
-    <dialog class="add-modal">
-        <form onsubmit="onSaveBook()" method="dialog">
-            <span>Add new book</span>
-            <input class="name" type="text" placeholder="Enter book name">
-            <input class="price" type="number" placeholder="Enter price">
-            <button>Save</button>
+    <dialog class="edit-modal">
+        <form class="book-edit-form" onsubmit="onSaveBook(event)">
+            <h2 class="book-edit-title">Add book</h2>
+            <input name="title" type="text" placeholder="Book title" required>
+            <input name="price" type="number" min="1" placeholder="Price" required>
+            <input name="img" type="text" placeholder="Image URL or local path">
+            <div class="edit-rating-row">
+                <span>Rating</span>
+                <button type="button" onclick="onAdjustEditRating(-1)">-</button>
+                <input class="book-rating-value" type="hidden" value="3">
+                <div class="book-rating-preview rating"></div>
+                <button type="button" onclick="onAdjustEditRating(1)">+</button>
+            </div>
+            <div class="modal-actions">
+                <button type="button" onclick="onCloseEditModal()">Cancel</button>
+                <button type="submit">Save</button>
+            </div>
         </form>
     </dialog>
 
     <dialog class="details-modal" onclose="onCloseDetails()">
-        <form method="dialog">
-            <button>x</button>
+        <form method="dialog" class="details-content">
+            <button class="close-btn">x</button>
             <img src="" alt="book cover">
-            <div class="rating"></div>
-            <div class="price"></div>
-            <p>some thing about book</p>
+            <h2 class="details-title"></h2>
+            <div class="details-rating rating"></div>
+            <div class="details-price"></div>
+            <div class="modal-actions">
+                <button type="button" onclick="onDetailsToEdit()">Edit Book</button>
+            </div>
         </form>
     </dialog>
 
@@ -69,8 +95,6 @@
         <span></span>
     </dialog>
 
-    <!-- <script src="js/utils.js"></script> -->
-    <!-- <script src="js/config/assets.js"></script> -->
     <script src="js/services/util.service.js"></script>
     <script src="js/services/storage.service.js"></script>
     <script src="js/services/book.service.js"></script>
